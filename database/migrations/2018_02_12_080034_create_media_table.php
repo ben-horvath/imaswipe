@@ -17,7 +17,7 @@ class CreateMediaTable extends Migration
             $table->increments('id');
             $table->string('name')->unique();
             $table->string('extension');
-            $table->string('mime-type');
+            $table->string('mime_type');
             $table->timestamps();
         });
     }
