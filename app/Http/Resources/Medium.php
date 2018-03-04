@@ -14,6 +14,10 @@ class Medium extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $response = parent::toArray($request);
+
+        $response['url'] = asset('storage/' . $this->name . '.' . $this->extension);
+
+        return $response;
     }
 }

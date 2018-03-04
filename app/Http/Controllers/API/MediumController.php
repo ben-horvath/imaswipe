@@ -56,6 +56,18 @@ class MediumController extends Controller
     }
 
     /**
+     * Display a random resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function random()
+    {
+        $medium = Medium::inRandomOrder()->first();
+
+        return new MediumResource($medium);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  \App\Medium  $medium
