@@ -63,22 +63,32 @@
 
             /* preload and step media */
             let nextMedium = new Image();
+            let loadingNextMedium = false;
 
             function preloadNextMedium() {
+                loadingNextMedium = true;
+
                 axios.get('/api/media/random')
                     .then(function (response) {
-                        console.log(response);
+                        /* set new medium source on success */
                         nextMedium.src = response.data.data.url;
                     })
                     .catch(function (error) {
+                        /* handle errors */
                         console.log(error);
+                    })
+                    .then(function () {
+                        /* always executed */
+                        loadingNextMedium = false;
                     });
             }
 
             function stepMedia() {
                 document.getElementById('medium').src = nextMedium.src;
 
-                preloadNextMedium();
+                if (!loadingNextMedium) {
+                    preloadNextMedium();
+                }
             }
         </script>
     </head>
