@@ -31,7 +31,7 @@ class MediumController extends Controller
     public function store(Request $request)
     {
         /* get remote file to a temporary local place */
-        $contents = file_get_contents($request->input('url'));
+        $contents = file_get_contents($request->input('images.standard_resolution.url'));
         $name = Str::random(40);
         Storage::put($name, $contents, 'public');
 
