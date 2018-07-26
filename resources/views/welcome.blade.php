@@ -44,12 +44,32 @@
             .max-full-width {
                 max-width: 100%;
             }
+
+            #permalink {
+                display: none;
+                background-color: rgba(0,0,0,0.7);
+                border: none;
+                color: white;
+                padding: 22px 44px;
+                text-align: center;
+                text-decoration: none;
+                font-size: 18px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                cursor: pointer;
+                border-radius: 10px;
+            }
         </style>
 
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
 
         <script>
+            mediumPermalinkBase = '{{ route('welcome-start-with', ['name' => '']) }}' + '/'
+
             /* init axios */
             axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -85,9 +105,12 @@
             }
 
             function stepMedia() {
+                document.getElementById('permalink').style.display = 'none';
                 mediumElement = document.getElementById('medium');
                 mediumContainer = document.getElementById('medium-container');
                 mediumContainer.replaceChild(nextMediumElement, mediumElement);
+                document.getElementById('permalink').dataset.clipboardText =
+                    mediumPermalinkBase + nextMedium.name;
 
                 if (!loadingNextMedium) {
                     preloadNextMedium();
@@ -134,8 +157,24 @@
             @endif
         </div>
 
+        <button
+            id="permalink"
+            onclick="this.style.display = 'none';"
+            data-clipboard-text="{{ route('welcome-start-with', ['name' => $initial_medium['name']]) }}"
+        >Copy Link</button>
+
         <script>
+            currentMedium = {!! json_encode($initial_medium) !!}
             nextMedium = {!! json_encode($next_medium) !!}
+
+            new ClipboardJS('#permalink');
+
+            window.oncontextmenu = function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                document.getElementById('permalink').style.display = 'initial';
+                return false;
+            };
 
             createNextMediumElement();
         </script>

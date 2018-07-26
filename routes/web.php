@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', 'WelcomeController@show');
-
 Route::get('assess', 'AssessController@show');
+
+Route::get('{name}', 'WelcomeController@startWith')->name('welcome-start-with');
+
+Route::get('/', 'WelcomeController@show');
