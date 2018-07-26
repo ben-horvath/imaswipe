@@ -62,7 +62,6 @@
             }
 
             /* preload and step media */
-            let nextMedium = new Image();
             let loadingNextMedium = false;
 
             function preloadNextMedium() {
@@ -71,7 +70,9 @@
                 axios.get('/api/media/random')
                     .then(function (response) {
                         /* set new medium source on success */
-                        nextMedium.src = response.data.data.url;
+                        nextMedium = response.data.data;
+
+                        createNextMediumElement();
                     })
                     .catch(function (error) {
                         /* handle errors */
@@ -84,28 +85,59 @@
             }
 
             function stepMedia() {
-                document.getElementById('medium').src = nextMedium.src;
+                mediumElement = document.getElementById('medium');
+                mediumContainer = document.getElementById('medium-container');
+                mediumContainer.replaceChild(nextMediumElement, mediumElement);
 
                 if (!loadingNextMedium) {
                     preloadNextMedium();
                 }
             }
+
+            function createNextMediumElement() {
+                if (nextMedium.mime_type.startsWith('image/')) {
+                    nextMediumElement = document.createElement("img");
+                } else if (nextMedium.mime_type.startsWith('video/')) {
+                    nextMediumElement = document.createElement("video");
+                    nextMediumElement.setAttribute('autoplay', '');
+                    nextMediumElement.setAttribute('loop', '');
+                    nextMediumElement.setAttribute('muted', '');
+                }
+                nextMediumElement.setAttribute('src', nextMedium.url);
+                nextMediumElement.classList.add('max-full-height');
+                nextMediumElement.classList.add('max-full-Width');
+                nextMediumElement.id = 'medium';
+            }
         </script>
     </head>
     <body>
         <div
+            id="medium-container"
             onclick="stepMedia()"
             class="flex-center position-ref full-height full-width"
         >
-            <img
-                id="medium"
-                class="max-full-height max-full-width"
-                src="{{ $initial_medium['url'] }}"
-            >
+            @if(substr_count($initial_medium['mime_type'], 'image/'))
+                <img
+                    id="medium"
+                    class="max-full-height max-full-width"
+                    src="{{ $initial_medium['url'] }}"
+                >
+            @elseif(substr_count($initial_medium['mime_type'], 'video/'))
+                <video
+                    id="medium"
+                    class="max-full-height max-full-width"
+                    src="{{ $initial_medium['url'] }}"
+                    autoplay
+                    loop
+                    muted>
+                </video>
+            @endif
         </div>
 
         <script>
-            nextMedium.src = "{{ $next_medium['url'] }}"
+            nextMedium = {!! json_encode($next_medium) !!}
+
+            createNextMediumElement();
         </script>
     </body>
 </html>

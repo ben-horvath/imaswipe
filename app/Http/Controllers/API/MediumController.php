@@ -45,12 +45,12 @@ class MediumController extends Controller
         $collection = $media->getSidecarMedias();
         if (count($collection) > 1) {
             foreach ($collection as $current_media) {
-                $media_url = $current_media->getImageHighResolutionUrl();
+                $media_url = $this->get_media_url($current_media);
                 $stored_media[] = $this->copy_remote_file($media_url);
             }
             return MediumResource::collection(collect($stored_media));
         } else {
-            $media_url = $media->getImageHighResolutionUrl();
+            $media_url = $this->get_media_url($media);
             $stored_medium = $this->copy_remote_file($media_url);
             return new MediumResource($stored_medium);
         }
@@ -126,5 +126,17 @@ class MediumController extends Controller
 
         /* return the newly created medium as a resource */
         return $medium;
+    }
+
+    private function get_media_url($media) {
+        switch ($media->getType()) {
+            case 'image':
+                return $media->getImageHighResolutionUrl();
+                break;
+
+            case 'video':
+                return $media->getVideoStandardResolutionUrl();
+                break;
+        }
     }
 }
