@@ -19,4 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('media/random', 'API\MediumController@random');
 
+Route::get('media/assess', 'API\MediumController@assess');
+
 Route::apiResource('media', 'API\MediumController');

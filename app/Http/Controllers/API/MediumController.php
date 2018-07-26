@@ -6,9 +6,12 @@ use App\Medium;
 use App\Http\Resources\Medium as MediumResource;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Collection;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use InstagramScraper\Instagram;
+use Illuminate\Support\Facades\Log;
 
 class MediumController extends Controller
 {
@@ -26,12 +29,114 @@ class MediumController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\Medium
      */
     public function store(Request $request)
     {
+        /* check and sanitize input */
+        if (!$request->filled('url')) {
+            return;
+        }
+        $clean_url = strtok($request->input('url'), '?');
+
+        /* scrape Instagram post */
+        $instagram = new Instagram;
+        $media = $instagram->getMediaByUrl($clean_url);
+        $collection = $media->getSidecarMedias();
+        if (count($collection) > 1) {
+            foreach ($collection as $current_media) {
+                $media_url = $this->get_media_url($current_media);
+                $stored_media[] = $this->copy_remote_file($media_url);
+            }
+            return MediumResource::collection(collect($stored_media));
+        } else {
+            $media_url = $this->get_media_url($media);
+            $stored_medium = $this->copy_remote_file($media_url);
+            return new MediumResource($stored_medium);
+        }
+    }
+
+    /**
+     * Return a random resource.
+     *
+     * @return \App\Http\Resources\Medium
+     */
+    public function random()
+    {
+        $medium = Medium::where('approved', true)->inRandomOrder()->first();
+
+        return new MediumResource($medium);
+    }
+
+    /**
+     * Return a resource to assess.
+     *
+     * @return \App\Http\Resources\Medium
+     */
+    public function assess()
+    {
+        $medium = Medium::where('approved', null)->inRandomOrder()->first();
+
+        if ($medium) {
+            return new MediumResource($medium);
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Medium  $medium
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Medium $medium)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Medium  $medium
+     * @return \App\Http\Resources\Medium
+     */
+    public function update(Request $request, Medium $medium)
+    {
+        if ($request->approved == true) {
+            $medium->approved = true;
+            $medium->save();
+        }
+
+        return new MediumResource($medium);
+    }
+
+    /**
+     * Remove the specified resource from database and the corresponding file
+     * from storage.
+     *
+     * @param  \App\Medium  $medium
+     * @return int
+     */
+    public function destroy(Medium $medium)
+    {
+        /* save the ID for returning */
+        $id = $medium->id;
+
+        /* remove medium file from storage */
+        Storage::disk('public')
+            ->delete($medium->name . '.' . $medium->extension);
+
+        /* remove medium entry from database */
+        $medium->delete();
+
+        return $id;
+    }
+
+    private function copy_remote_file($url) {
         /* get remote file to a temporary local place */
-        $contents = file_get_contents($request->input('images.standard_resolution.url'));
+        $contents = file_get_contents($url);
         $name = Str::random(40);
         Storage::put($name, $contents, 'public');
 
@@ -52,52 +157,18 @@ class MediumController extends Controller
         $medium->save();
 
         /* return the newly created medium as a resource */
-        return new MediumResource($medium);
+        return $medium;
     }
 
-    /**
-     * Display a random resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function random()
-    {
-        $medium = Medium::inRandomOrder()->first();
+    private function get_media_url($media) {
+        switch ($media->getType()) {
+            case 'image':
+                return $media->getImageHighResolutionUrl();
+                break;
 
-        return new MediumResource($medium);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Medium  $medium
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Medium $medium)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Medium  $medium
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Medium $medium)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Medium  $medium
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Medium $medium)
-    {
-        //
+            case 'video':
+                return $media->getVideoStandardResolutionUrl();
+                break;
+        }
     }
 }

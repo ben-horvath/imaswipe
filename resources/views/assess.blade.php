@@ -7,7 +7,7 @@
 
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ env('APP_NAME') }}</title>
+        <title>Assess - {{ env('APP_NAME') }}</title>
 
         <!-- Fonts -->
 
@@ -48,8 +48,17 @@
 
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+        <script src="js/hammer.min.js"></script>
 
         <script>
+            /* init media */
+            @if(!empty($initial_medium))
+                currentMedium = {!! json_encode($initial_medium) !!};
+            @endif
+            @if(!empty($next_medium))
+                nextMedium = {!! json_encode($next_medium) !!};
+            @endif
+
             /* init axios */
             axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -67,12 +76,17 @@
             function preloadNextMedium() {
                 loadingNextMedium = true;
 
-                axios.get('/api/media/random')
+                axios.get('/api/media/assess')
                     .then(function (response) {
                         /* set new medium source on success */
-                        nextMedium = response.data.data;
-
-                        createNextMediumElement();
+                        if (typeof response.data == 'object' &&
+                            typeof response.data.data == 'object'
+                        ) {
+                            nextMedium = response.data.data;
+                            createNextMediumElement();
+                        } else {
+                            nextMedium = null;
+                        }
                     })
                     .catch(function (error) {
                         /* handle errors */
@@ -85,12 +99,20 @@
             }
 
             function stepMedia() {
-                mediumElement = document.getElementById('medium');
-                mediumContainer = document.getElementById('medium-container');
-                mediumContainer.replaceChild(nextMediumElement, mediumElement);
+                if (typeof nextMedium === 'object' &&
+                    nextMedium !== null
+                ) {
+                    mediumElement = document.getElementById('medium');
+                    mediumContainer.replaceChild(nextMediumElement, mediumElement);
+                    currentMedium = Object.assign({}, nextMedium);
 
-                if (!loadingNextMedium) {
-                    preloadNextMedium();
+                    if (!loadingNextMedium) {
+                        preloadNextMedium();
+                    }
+                } else {
+                    mediumContainer.removeChild(mediumElement);
+                    currentMedium = null;
+                    mediumElement = null;
                 }
             }
 
@@ -113,31 +135,66 @@
     <body>
         <div
             id="medium-container"
-            onclick="stepMedia()"
             class="flex-center position-ref full-height full-width"
         >
-            @if(substr_count($initial_medium['mime_type'], 'image/'))
-                <img
-                    id="medium"
-                    class="max-full-height max-full-width"
-                    src="{{ $initial_medium['url'] }}"
-                >
-            @elseif(substr_count($initial_medium['mime_type'], 'video/'))
-                <video
-                    id="medium"
-                    class="max-full-height max-full-width"
-                    src="{{ $initial_medium['url'] }}"
-                    autoplay
-                    loop
-                    muted>
-                </video>
+            @if(!empty($initial_medium))
+                @if(substr_count($initial_medium['mime_type'], 'image/'))
+                    <img
+                        id="medium"
+                        class="max-full-height max-full-width"
+                        src="{{ $initial_medium['url'] }}"
+                    >
+                @elseif(substr_count($initial_medium['mime_type'], 'video/'))
+                    <video
+                        id="medium"
+                        class="max-full-height max-full-width"
+                        src="{{ $initial_medium['url'] }}"
+                        autoplay
+                        loop
+                        muted>
+                    </video>
+                @endif
             @endif
         </div>
 
         <script>
-            nextMedium = {!! json_encode($next_medium) !!}
+            mediumContainer = document.getElementById('medium-container');
 
-            createNextMediumElement();
+            @if(!empty($initial_medium))
+                mediumElement = document.getElementById('medium');
+            @else
+                mediumElement = null;
+            @endif
+
+            @if(!empty($next_medium))
+                createNextMediumElement();
+            @else
+                nextMediumElement = null;
+            @endif
+
+            /* init Hammer */
+            hammer = new Hammer(mediumContainer);
+
+            /* hammer event listeners */
+            hammer.on('swipeleft', function(ev) {
+                if (mediumElement) {
+                    axios.delete('/api/media/' + currentMedium.id);
+                    stepMedia();
+                }
+            });
+
+            hammer.on('swiperight', function(ev) {
+                if (mediumElement) {
+                    axios.patch('/api/media/' + currentMedium.id, {approved: true});
+                    stepMedia();
+                }
+            });
+
+            hammer.on('tap', function(ev) {
+                if (mediumElement) {
+                    stepMedia();
+                }
+            });
         </script>
     </body>
 </html>

@@ -12,3 +12,5 @@
 */
 
 Route::get('/', 'WelcomeController@show');
+
+Route::get('assess', 'AssessController@show');
