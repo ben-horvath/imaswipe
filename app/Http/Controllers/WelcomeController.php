@@ -17,4 +17,15 @@ class WelcomeController extends Controller
 
         return view('welcome', compact('initial_medium', 'next_medium'));
     }
+
+    public function startWith($name)
+    {
+        $first_m = Medium::where('name', $name)->first();
+        $second_m = Medium::where('approved', true)->inRandomOrder()->first();
+
+        $initial_medium = (new MediumResource($first_m))->toArray($first_m);
+        $next_medium = (new MediumResource($second_m))->toArray($second_m);
+
+        return view('welcome', compact('initial_medium', 'next_medium'));
+    }
 }
