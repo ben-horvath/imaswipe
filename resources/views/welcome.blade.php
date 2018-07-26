@@ -105,7 +105,7 @@
                 }
                 nextMediumElement.setAttribute('src', nextMedium.url);
                 nextMediumElement.classList.add('max-full-height');
-                nextMediumElement.classList.add('max-full-Width');
+                nextMediumElement.classList.add('max-full-width');
                 nextMediumElement.id = 'medium';
             }
         </script>
