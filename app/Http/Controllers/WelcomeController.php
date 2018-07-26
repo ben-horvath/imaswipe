@@ -10,7 +10,7 @@ class WelcomeController extends Controller
 {
     public function show()
     {
-        $media = Medium::inRandomOrder()->limit(2)->get();
+        $media = Medium::where('approved', true)->inRandomOrder()->limit(2)->get();
 
         $initial_medium = (new MediumResource($media[0]))->toArray($media[0]);
         $next_medium = (new MediumResource($media[1]))->toArray($media[1]);

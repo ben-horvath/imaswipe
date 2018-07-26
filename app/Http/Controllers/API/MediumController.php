@@ -29,7 +29,7 @@ class MediumController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\Medium
      */
     public function store(Request $request)
     {
@@ -57,15 +57,31 @@ class MediumController extends Controller
     }
 
     /**
-     * Display a random resource.
+     * Return a random resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\Medium
      */
     public function random()
     {
-        $medium = Medium::inRandomOrder()->first();
+        $medium = Medium::where('approved', true)->inRandomOrder()->first();
 
         return new MediumResource($medium);
+    }
+
+    /**
+     * Return a resource to assess.
+     *
+     * @return \App\Http\Resources\Medium
+     */
+    public function assess()
+    {
+        $medium = Medium::where('approved', null)->inRandomOrder()->first();
+
+        if ($medium) {
+            return new MediumResource($medium);
+        } else {
+            return;
+        }
     }
 
     /**
@@ -84,22 +100,38 @@ class MediumController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Medium  $medium
-     * @return \Illuminate\Http\Response
+     * @return \App\Http\Resources\Medium
      */
     public function update(Request $request, Medium $medium)
     {
-        //
+        if ($request->approved == true) {
+            $medium->approved = true;
+            $medium->save();
+        }
+
+        return new MediumResource($medium);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from database and the corresponding file
+     * from storage.
      *
      * @param  \App\Medium  $medium
-     * @return \Illuminate\Http\Response
+     * @return int
      */
     public function destroy(Medium $medium)
     {
-        //
+        /* save the ID for returning */
+        $id = $medium->id;
+
+        /* remove medium file from storage */
+        Storage::disk('public')
+            ->delete($medium->name . '.' . $medium->extension);
+
+        /* remove medium entry from database */
+        $medium->delete();
+
+        return $id;
     }
 
     private function copy_remote_file($url) {
