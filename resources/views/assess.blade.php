@@ -121,11 +121,11 @@
                     nextMediumElement = document.createElement("img");
                 } else if (nextMedium.mime_type.startsWith('video/')) {
                     nextMediumElement = document.createElement("video");
-                    nextMediumElement.setAttribute('autoplay', '');
-                    nextMediumElement.setAttribute('loop', '');
-                    nextMediumElement.setAttribute('muted', '');
+                    nextMediumElement.autoplay = true;
+                    nextMediumElement.loop = true;
+                    nextMediumElement.muted = true;
                 }
-                nextMediumElement.setAttribute('src', nextMedium.url);
+                nextMediumElement.src = nextMedium.url;
                 nextMediumElement.classList.add('max-full-height');
                 nextMediumElement.classList.add('max-full-width');
                 nextMediumElement.id = 'medium';
