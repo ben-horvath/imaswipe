@@ -7,11 +7,12 @@ Mobile-first visual and functional design.
 1. Set up a site that's able to serve Laravel.<br/>
 See [Requirements in Laravel Docs](https://laravel.com/docs/#server-requirements) for details.
 2. Clone this repo into it.
-3. Create a symbolic link in the folder `public` with the name of `storage` which points to the `storage/app/public` directory.
-4. Rename or copy `.env.example` to `.env` and set up the `APP_` and `DB_` details. Skip `APP_KEY`, it will be updated by a script later.
-5. Run `composer install` to install php dependencies.
-6. Run `npm install` to install node packages.
-7. Run `php artisan key:generate` to generate an encryption key for your site. Your `.env` file will be updated with this new key.
+3. Rename or copy `.env.example` to `.env` and set up the `APP_` and `DB_` details. Skip `APP_KEY`, it will be updated by a script later.
+4. Run `composer install` to install php dependencies.
+5. Run `npm install` to install node packages.
+6. Run `php artisan key:generate` to generate an encryption key for your site. Your `.env` file will be updated with this new key.
+7. Create a symbolic link in the folder `public` with the name of `storage` which points to the `storage/app/public` directory.<br/>
+You can use `php artisan storage:link` command to create it as [Laravel Docs](https://laravel.com/docs/filesystem#configuration) suggests.
 8. (Optional) Create a directory `input` in `storage/app/public`<br/>
 Needed only if you want to use the Upload (FTP) option to add media described below.
 9. (Optional) Start scheduler as described in the [Laravel Docs](https://laravel.com/docs/scheduling#introduction).<br/>
