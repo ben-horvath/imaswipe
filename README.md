@@ -13,11 +13,12 @@ See [Requirements in Laravel Docs](https://laravel.com/docs/#server-requirements
 6. Run `php artisan key:generate` to generate an encryption key for your site. Your `.env` file will be updated with this new key.
 7. Create a symbolic link in the folder `public` with the name of `storage` which points to the `storage/app/public` directory.<br/>
 You can use `php artisan storage:link` command to create it as [Laravel Docs](https://laravel.com/docs/filesystem#configuration) suggests.
-8. (Optional) Create a directory `input` in `storage/app/public`<br/>
+8. Run database migrations with `php artisan migrate` to initialize database.
+9. (Optional) Create a directory `input` in `storage/app/public`<br/>
 Needed only if you want to use the Upload (FTP) option to add media described below.
-9. (Optional) Start scheduler as described in the [Laravel Docs](https://laravel.com/docs/scheduling#introduction).<br/>
+10. (Optional) Start scheduler as described in the [Laravel Docs](https://laravel.com/docs/scheduling#introduction).<br/>
 Needed only if you want to use the Upload (FTP) option to add media described below.
-10. Add at least two media as described below.
+11. Add at least two media as described below.
 
 ## Use
 
