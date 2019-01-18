@@ -9,42 +9,8 @@
 
         <title>Assess - {{ env('APP_NAME') }}</title>
 
-        <!-- Fonts -->
-
         <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #000;
-                height: 100%;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100%;
-            }
-
-            .full-width {
-                width: 100%;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .max-full-height {
-                max-height: 100%;
-            }
-
-            .max-full-width {
-                max-width: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
@@ -126,28 +92,21 @@
                     nextMediumElement.muted = true;
                 }
                 nextMediumElement.src = nextMedium.url;
-                nextMediumElement.classList.add('max-full-height');
-                nextMediumElement.classList.add('max-full-width');
                 nextMediumElement.id = 'medium';
             }
         </script>
     </head>
     <body>
-        <div
-            id="medium-container"
-            class="flex-center position-ref full-height full-width"
-        >
+        <div id="medium-container">
             @if(!empty($initial_medium))
                 @if(substr_count($initial_medium['mime_type'], 'image/'))
                     <img
                         id="medium"
-                        class="max-full-height max-full-width"
                         src="{{ $initial_medium['url'] }}"
                     >
                 @elseif(substr_count($initial_medium['mime_type'], 'video/'))
                     <video
                         id="medium"
-                        class="max-full-height max-full-width"
                         src="{{ $initial_medium['url'] }}"
                         autoplay
                         loop

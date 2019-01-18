@@ -9,59 +9,8 @@
 
         <title>{{ env('APP_NAME') }}</title>
 
-        <!-- Fonts -->
-
         <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #000;
-                height: 100%;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100%;
-            }
-
-            .full-width {
-                width: 100%;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .max-full-height {
-                max-height: 100%;
-            }
-
-            .max-full-width {
-                max-width: 100%;
-            }
-
-            #permalink {
-                display: none;
-                background-color: rgba(0,0,0,0.7);
-                border: none;
-                color: white;
-                padding: 22px 44px;
-                text-align: center;
-                text-decoration: none;
-                font-size: 18px;
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                cursor: pointer;
-                border-radius: 10px;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
@@ -127,8 +76,6 @@
                     nextMediumElement.muted = true;
                 }
                 nextMediumElement.src = nextMedium.url;
-                nextMediumElement.classList.add('max-full-height');
-                nextMediumElement.classList.add('max-full-width');
                 nextMediumElement.id = 'medium';
             }
         </script>
@@ -137,18 +84,15 @@
         <div
             id="medium-container"
             onclick="stepMedia()"
-            class="flex-center position-ref full-height full-width"
         >
             @if(substr_count($initial_medium['mime_type'], 'image/'))
                 <img
                     id="medium"
-                    class="max-full-height max-full-width"
                     src="{{ $initial_medium['url'] }}"
                 >
             @elseif(substr_count($initial_medium['mime_type'], 'video/'))
                 <video
                     id="medium"
-                    class="max-full-height max-full-width"
                     src="{{ $initial_medium['url'] }}"
                     autoplay
                     loop
@@ -159,6 +103,7 @@
 
         <button
             id="permalink"
+            class="permalink"
             onclick="this.style.display = 'none';"
             data-clipboard-text="{{ route('welcome-start-with', ['name' => $initial_medium['name']]) }}"
         >Copy Link</button>
