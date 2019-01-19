@@ -22,7 +22,10 @@
             <app></app>
         </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <!-- Scripts -->
+        <script src="{{ asset('js/clipboard.min.js') }}"></script>
+        <script src="{{ asset('js/hammer.min.js') }}"></script>
+        <script src="{{ asset('js/prevent-ghost-click.js') }}"></script>
         <script src="{{ asset('js/app.js') }}"></script>
     </body>
 </html>

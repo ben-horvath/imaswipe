@@ -12,9 +12,6 @@
 </template>
 
 <script>
-    // Import helpers
-    import { exists } from '../helpers.js';
-
     // Import Vue components
     import ImageComp from './Image.vue';
     import VideoComp from './Video.vue';
@@ -33,10 +30,12 @@
                 media: [],
                 loadingMedium: false,
                 needMoreMedia: true,
-                stepMediaRequested: false
+                stepMediaRequested: false,
+                noMoreMediaAvailable: false
             }
         },
         mounted() {
+            /* Init ClipboardJS */
             new ClipboardJS('#permalink');
 
             window.oncontextmenu = function(event) {
@@ -45,6 +44,34 @@
                 document.getElementById('permalink').style.display = 'initial';
                 return false;
             };
+
+            /* Init Hammer */
+            let hammerElement = document.getElementById('medium-container');
+            window.hammer = new Hammer(hammerElement);
+            PreventGhostClick(hammerElement);
+
+            /* Register Hammer actions */
+            window.hammer.on('swipeleft', (event) => {
+                if (this.media.length) {
+                    if (window.hasOwnProperty('assess') && assess === true) {
+                        axios.delete('/api/media/' + this.media[0].id);
+                    }
+                    this.requestStepMedia();
+                }
+            });
+
+            window.hammer.on('swiperight', (event) => {
+                if (this.media.length) {
+                    if (window.hasOwnProperty('assess') && assess === true) {
+                        axios.patch('/api/media/' + this.media[0].id, {approved: true});
+                    }
+                    this.requestStepMedia();
+                }
+            });
+
+            window.hammer.on('tap', (event) => {
+                this.requestStepMedia();
+            });
 
             this.conditionalAddMediumToBuffer();
         },
@@ -94,15 +121,25 @@
             addMediumToBuffer() {
                 this.loadingMedium = true;
 
-                axios.get('/api/media/random')
+                let requestPath = '/api/media/random';
+                if (window.hasOwnProperty('assess') && assess === true) {
+                    requestPath = '/api/media/assess';
+                }
+                axios.get(requestPath)
                     .then((response) => {
                         /* set new medium resource on success */
 
                         if (
-                            !exists(response.data) ||
-                            !exists(response.data.data)
+                            !response.hasOwnProperty('data') ||
+                            !response.data.hasOwnProperty('data')
                         ) {
-                            console.log('Unexpected response from server.'); // TODO: error handling
+                            if (window.hasOwnProperty('assess') && assess === true) {
+                                this.noMoreMediaAvailable = true;
+                                console.log('Reached end of media.'); // TODO: notify user
+                            } else {
+                                console.log('Unexpected response from server.'); // TODO: error handling
+                            }
+                            return;
                         }
 
                         let relevantData = [
@@ -145,7 +182,11 @@
                     });
             },
             conditionalAddMediumToBuffer() {
-                if (!this.loadingMedium && this.needMoreMedia) {
+                if (
+                    !this.loadingMedium &&
+                    this.needMoreMedia &&
+                    !this.noMoreMediaAvailable
+                ) {
                     this.addMediumToBuffer();
                 }
             },
@@ -153,8 +194,14 @@
                 this.stepMediaRequested = true;
             },
             conditionalStepMedia() {
+                let minMediaCount = 1;
+
+                if (window.hasOwnProperty('assess') && assess === true) {
+                    minMediaCount = 0;
+                }
+
                 if (
-                    this.media.length > 1 &&
+                    this.media.length > minMediaCount &&
                     this.stepMediaRequested
                 ) {
                     this.media.shift();
