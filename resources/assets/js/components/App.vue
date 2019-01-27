@@ -1,5 +1,5 @@
 <template>
-    <div id="medium-container" @click="requestStepMedia">
+    <div id="medium-container">
         <component v-if="media.length" :is="comp" :src="src"></component>
 
         <button
@@ -54,7 +54,7 @@
             window.hammer.on('swipeleft', (event) => {
                 if (this.media.length) {
                     if (window.hasOwnProperty('assess') && assess === true) {
-                        axios.delete('/api/media/' + this.media[0].id);
+                        axios.delete('/api/media/' + this.media[0].name);
                     }
                     this.requestStepMedia();
                 }
@@ -63,7 +63,7 @@
             window.hammer.on('swiperight', (event) => {
                 if (this.media.length) {
                     if (window.hasOwnProperty('assess') && assess === true) {
-                        axios.patch('/api/media/' + this.media[0].id, {approved: true});
+                        axios.patch('/api/media/' + this.media[0].name, {approved: true});
                     }
                     this.requestStepMedia();
                 }
@@ -73,7 +73,11 @@
                 this.requestStepMedia();
             });
 
-            this.conditionalAddMediumToBuffer();
+            if (typeof firstMedium === 'string' && firstMedium.length) {
+                this.addMediumToBuffer(firstMedium);
+            } else {
+                this.addMediumToBuffer();
+            }
         },
         computed: {
             clipboardText() {
@@ -118,10 +122,13 @@
             }
         },
         methods: {
-            addMediumToBuffer() {
+            addMediumToBuffer(medium = null) {
                 this.loadingMedium = true;
 
                 let requestPath = '/api/media/random';
+                if (typeof medium === 'string' && medium.length) {
+                    requestPath = '/api/media/' + medium;
+                }
                 if (window.hasOwnProperty('assess') && assess === true) {
                     requestPath = '/api/media/assess';
                 }

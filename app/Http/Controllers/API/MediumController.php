@@ -92,7 +92,7 @@ class MediumController extends Controller
      */
     public function show(Medium $medium)
     {
-        //
+        return new MediumResource($medium);
     }
 
     /**
