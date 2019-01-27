@@ -10,12 +10,7 @@ class WelcomeController extends Controller
 {
     public function show()
     {
-        $media = Medium::where('approved', true)->inRandomOrder()->limit(2)->get();
-
-        $initial_medium = (new MediumResource($media[0]))->toArray($media[0]);
-        $next_medium = (new MediumResource($media[1]))->toArray($media[1]);
-
-        return view('welcome', compact('initial_medium', 'next_medium'));
+        return view('welcome');
     }
 
     public function startWith($name)
