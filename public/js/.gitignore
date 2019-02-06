@@ -1,4 +1,6 @@
 *
 */
 !.gitignore
+!clipboard.min.js
 !hammer.min.js
+!prevent-ghost-click.js
