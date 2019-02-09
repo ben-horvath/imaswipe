@@ -63,9 +63,9 @@ class MediumController extends Controller
      */
     public function random()
     {
-        $medium = Medium::where('approved', true)->inRandomOrder()->first();
+        $medium_collection = Medium::where('approved', true)->inRandomOrder()->take(10)->get();
 
-        return new MediumResource($medium);
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -75,13 +75,9 @@ class MediumController extends Controller
      */
     public function assess()
     {
-        $medium = Medium::where('approved', null)->inRandomOrder()->first();
+        $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
 
-        if ($medium) {
-            return new MediumResource($medium);
-        } else {
-            return;
-        }
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -92,7 +88,10 @@ class MediumController extends Controller
      */
     public function show(Medium $medium)
     {
-        return new MediumResource($medium);
+        $medium_collection = Medium::where('approved', true)->inRandomOrder()->take(10)->get();
+        $medium_collection->splice(0, 1, $medium);
+
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -109,7 +108,9 @@ class MediumController extends Controller
             $medium->save();
         }
 
-        return new MediumResource($medium);
+        $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
+
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -121,9 +122,6 @@ class MediumController extends Controller
      */
     public function destroy(Medium $medium)
     {
-        /* save the ID for returning */
-        $id = $medium->id;
-
         /* remove medium file from storage */
         Storage::disk('public')
             ->delete($medium->name . '.' . $medium->extension);
@@ -131,7 +129,9 @@ class MediumController extends Controller
         /* remove medium entry from database */
         $medium->delete();
 
-        return $id;
+        $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
+
+        return MediumResource::collection($medium_collection);
     }
 
     private function copy_remote_file($url) {

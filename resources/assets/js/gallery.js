@@ -28,21 +28,37 @@ class Medium {
     }
 }
 
-class Image extends Medium {
+class ImageMedium extends Medium {
     constructor(id = null, name = null, extension = null, mimeType = null, src = null) {
         super(id, name, extension, mimeType, src);
+
+        this.image = new Image();
+    }
+
+    load() {
+        if (typeof this.src === 'string' && this.src.length) {
+            this.image.src = this.src;
+        }
     }
 }
 
-class Video extends Medium {
+class VideoMedium extends Medium {
     constructor(id = null, name = null, extension = null, mimeType = null, src = null) {
         super(id, name, extension, mimeType, src);
+
+        this.video = document.createElement('video');
+    }
+
+    load() {
+        if (typeof this.src === 'string' && this.src.length) {
+            this.video.src = this.src;
+        }
     }
 }
 
 export {
     supportedMIMETypes,
     Medium,
-    Image,
-    Video
+    ImageMedium,
+    VideoMedium
 }

@@ -19,14 +19,14 @@
     // Import media classes
     import {
         Medium as MediumClass,
-        Image as ImageClass,
-        Video as VideoClass
+        ImageMedium as ImageClass,
+        VideoMedium as VideoClass
     } from '../gallery.js';
 
     export default {
         data() {
             return {
-                mediaBufferSize: 2, // TODO: get value from config
+                mediaBufferSize: 5, // TODO: get value from config
                 media: [],
                 loadingMedium: false,
                 needMoreMedia: true,
@@ -54,7 +54,18 @@
             window.hammer.on('swipeleft', (event) => {
                 if (this.media.length) {
                     if (window.hasOwnProperty('assess') && assess === true) {
-                        axios.delete('/api/media/' + this.media[0].name);
+                        axios.delete('/api/media/' + this.media[0].name)
+                            .then((response) => {
+                                this.fillMediaBuffer(response);
+                            })
+                            .catch((error) => {
+                                /* TODO: handle errors if failed */
+                                console.log(error); // TODO: error handling
+                            })
+                            .then(() => {
+                                /* always executed */
+                                this.loadingMedium = false;
+                            });
                     }
                     this.requestStepMedia();
                 }
@@ -63,7 +74,18 @@
             window.hammer.on('swiperight', (event) => {
                 if (this.media.length) {
                     if (window.hasOwnProperty('assess') && assess === true) {
-                        axios.patch('/api/media/' + this.media[0].name, {approved: true});
+                        axios.patch('/api/media/' + this.media[0].name, {approved: true})
+                            .then((response) => {
+                                this.fillMediaBuffer(response);
+                            })
+                            .catch((error) => {
+                                /* TODO: handle errors if failed */
+                                console.log(error); // TODO: error handling
+                            })
+                            .then(() => {
+                                /* always executed */
+                                this.loadingMedium = false;
+                            });
                     }
                     this.requestStepMedia();
                 }
@@ -78,6 +100,9 @@
             } else {
                 this.addMediumToBuffer();
             }
+        },
+        created() {
+            this.throttledAddMediumToBuffer = _.throttle(this.addMediumToBuffer, 2000)
         },
         computed: {
             clipboardText() {
@@ -134,50 +159,7 @@
                 }
                 axios.get(requestPath)
                     .then((response) => {
-                        /* set new medium resource on success */
-
-                        if (
-                            !response.hasOwnProperty('data') ||
-                            !response.data.hasOwnProperty('data')
-                        ) {
-                            if (window.hasOwnProperty('assess') && assess === true) {
-                                this.noMoreMediaAvailable = true;
-                                console.log('Reached end of media.'); // TODO: notify user
-                            } else {
-                                console.log('Unexpected response from server.'); // TODO: error handling
-                            }
-                            return;
-                        }
-
-                        let relevantData = [
-                            response.data.data.id,
-                            response.data.data.name,
-                            response.data.data.extension,
-                            response.data.data.mime_type,
-                            response.data.data.url
-                        ];
-                        
-                        let type = MediumClass.getType(response.data.data.mime_type);
-                        
-                        if (typeof type !== 'string') {
-                            console.log('Not supported MIME type: ' + typeof type); // TODO: error handling
-                            return;
-                        }
-
-                        switch (type) {
-                            case 'image':
-                                this.media.push(new ImageClass(...relevantData));
-                                break;
-                        
-                            case 'video':
-                                this.media.push(new VideoClass(...relevantData));
-                                break;
-                        
-                            default:
-                                console.log('Unsupported medium type: ' + type); // TODO: error handling
-                                return;
-                                break;
-                        }
+                        this.fillMediaBuffer(response);
                     })
                     .catch((error) => {
                         /* TODO: handle errors if failed */
@@ -194,7 +176,7 @@
                     this.needMoreMedia &&
                     !this.noMoreMediaAvailable
                 ) {
-                    this.addMediumToBuffer();
+                    this.throttledAddMediumToBuffer();
                 }
             },
             requestStepMedia() {
@@ -213,6 +195,67 @@
                 ) {
                     this.media.shift();
                     this.stepMediaRequested = false;
+                }
+            },
+            fillMediaBuffer(response) {
+                if (
+                    !response.hasOwnProperty('data') ||
+                    !response.data.hasOwnProperty('data')
+                ) {
+                    if (window.hasOwnProperty('assess') && assess === true) {
+                        this.noMoreMediaAvailable = true;
+                        console.log('Reached end of media.'); // TODO: notify user
+                    } else {
+                        console.log('Unexpected response from server.'); // TODO: error handling
+                    }
+                    return;
+                }
+
+                walkThroughNew:
+                for (
+                    let i = 0;
+                    this.media.length < this.mediaBufferSize &&
+                    i < response.data.data.length;
+                    i++
+                ) {
+                    walkThroughExisting:
+                    for (let j = 0; j < this.media.length; j++) {
+                        if (this.media[j].name == response.data.data[i].name) {
+                            continue walkThroughNew;
+                        }
+                    }
+
+                    let relevantData = [
+                        response.data.data[i].id,
+                        response.data.data[i].name,
+                        response.data.data[i].extension,
+                        response.data.data[i].mime_type,
+                        response.data.data[i].url
+                    ];
+                    
+                    let type = MediumClass.getType(response.data.data[i].mime_type);
+                    
+                    if (typeof type !== 'string') {
+                        console.log('Not supported MIME type: ' + typeof type); // TODO: error handling
+                        return;
+                    }
+
+                    switch (type) {
+                        case 'image':
+                            this.media.push(new ImageClass(...relevantData));
+                            this.media[this.media.length - 1].load();
+                            break;
+                    
+                        case 'video':
+                            this.media.push(new VideoClass(...relevantData));
+                            this.media[this.media.length - 1].load();
+                            break;
+                    
+                        default:
+                            console.log('Unsupported medium type: ' + type); // TODO: error handling
+                            return;
+                            break;
+                    }
                 }
             }
         },
