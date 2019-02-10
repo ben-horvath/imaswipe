@@ -15,7 +15,7 @@
         <!-- Scripts -->
         <script>
             var mediumPermalinkBase = '{{ route('welcome-start-with', ['name' => '']) . '/' }}';
-            var assess = true;
+            var mode = 'assess';
         </script>
     </head>
     <body>

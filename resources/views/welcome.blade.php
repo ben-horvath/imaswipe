@@ -16,6 +16,7 @@
         <script>
             var mediumPermalinkBase = '{{ route('welcome-start-with', ['name' => '']) . '/' }}';
             var firstMedium = '{{ !empty($first_medium) ? $first_medium : '' }}';
+            var mode = 'browse';
         </script>
     </head>
     <body>
