@@ -21,4 +21,6 @@ Route::get('media/random', 'API\MediumController@random');
 
 Route::get('media/assess', 'API\MediumController@assess');
 
+Route::post('media/sync', 'API\MediumController@sync');
+
 Route::apiResource('media', 'API\MediumController');

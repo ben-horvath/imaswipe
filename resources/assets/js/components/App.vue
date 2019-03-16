@@ -1,6 +1,6 @@
 <template>
     <div id="medium-container">
-        <component v-if="media.length" :is="comp" :src="src"></component>
+        <component v-if="src" :is="comp" :src="src"></component>
 
         <button
             id="permalink"
@@ -19,19 +19,20 @@
     // Import media classes
     import {
         Medium as MediumClass,
-        Image as ImageClass,
-        Video as VideoClass
+        ImageMedium as ImageClass,
+        VideoMedium as VideoClass,
+        MediaBuffer as MediaBuffer
     } from '../gallery.js';
+
+    var startWith = null;
+    if (typeof firstMedium === 'string' && firstMedium.length) {
+        startWith = firstMedium;
+    }
 
     export default {
         data() {
             return {
-                mediaBufferSize: 2, // TODO: get value from config
-                media: [],
-                loadingMedium: false,
-                needMoreMedia: true,
-                stepMediaRequested: false,
-                noMoreMediaAvailable: false
+                mediaBuffer: new MediaBuffer(mode, startWith)
             }
         },
         mounted() {
@@ -51,170 +52,42 @@
             PreventGhostClick(hammerElement);
 
             /* Register Hammer actions */
+            window.hammer.on('tap', (event) => {
+                this.mediaBuffer.stepMedia();
+            });
+
             window.hammer.on('swipeleft', (event) => {
-                if (this.media.length) {
-                    if (window.hasOwnProperty('assess') && assess === true) {
-                        axios.delete('/api/media/' + this.media[0].name);
-                    }
-                    this.requestStepMedia();
-                }
+                this.mediaBuffer.deleteMedium();
             });
 
             window.hammer.on('swiperight', (event) => {
-                if (this.media.length) {
-                    if (window.hasOwnProperty('assess') && assess === true) {
-                        axios.patch('/api/media/' + this.media[0].name, {approved: true});
-                    }
-                    this.requestStepMedia();
-                }
+                this.mediaBuffer.approveMedium();
             });
 
-            window.hammer.on('tap', (event) => {
-                this.requestStepMedia();
-            });
-
-            if (typeof firstMedium === 'string' && firstMedium.length) {
-                this.addMediumToBuffer(firstMedium);
-            } else {
-                this.addMediumToBuffer();
-            }
+            this.mediaBuffer.syncWithServer();
         },
         computed: {
             clipboardText() {
-                if (this.media.length) {
-                    return mediumPermalinkBase + this.media[0].name;
+                if (this.mediaBuffer.medium instanceof MediumClass) {
+                    return mediumPermalinkBase + this.mediaBuffer.medium.name;
                 }
             },
             comp() {
-                if (this.media.length) {
-                    if (this.media[0] instanceof VideoClass) {
-                        return 'videocomp';
-                    }
+                if (this.mediaBuffer.medium instanceof VideoClass) {
+                    return 'videocomp';
+                } else {
+                    return 'imagecomp';
                 }
-                return 'imagecomp';
             },
             src() {
-                if (this.media.length) {
-                    return this.media[0].src;
+                if (this.mediaBuffer.medium instanceof MediumClass) {
+                    return this.mediaBuffer.medium.src;
                 } else {
                     return '';
                 }
             }
         },
-        watch: {
-            loadingMedium() {
-                this.conditionalAddMediumToBuffer();
-            },
-            needMoreMedia() {
-                this.conditionalAddMediumToBuffer();
-            },
-            media() {
-                if (this.media.length < this.mediaBufferSize) {
-                    this.needMoreMedia = true;
-                } else {
-                    this.needMoreMedia = false;
-                }
-
-                this.conditionalStepMedia();
-            },
-            stepMediaRequested() {
-                this.conditionalStepMedia();
-            }
-        },
         methods: {
-            addMediumToBuffer(medium = null) {
-                this.loadingMedium = true;
-
-                let requestPath = '/api/media/random';
-                if (typeof medium === 'string' && medium.length) {
-                    requestPath = '/api/media/' + medium;
-                }
-                if (window.hasOwnProperty('assess') && assess === true) {
-                    requestPath = '/api/media/assess';
-                }
-                axios.get(requestPath)
-                    .then((response) => {
-                        /* set new medium resource on success */
-
-                        if (
-                            !response.hasOwnProperty('data') ||
-                            !response.data.hasOwnProperty('data')
-                        ) {
-                            if (window.hasOwnProperty('assess') && assess === true) {
-                                this.noMoreMediaAvailable = true;
-                                console.log('Reached end of media.'); // TODO: notify user
-                            } else {
-                                console.log('Unexpected response from server.'); // TODO: error handling
-                            }
-                            return;
-                        }
-
-                        let relevantData = [
-                            response.data.data.id,
-                            response.data.data.name,
-                            response.data.data.extension,
-                            response.data.data.mime_type,
-                            response.data.data.url
-                        ];
-                        
-                        let type = MediumClass.getType(response.data.data.mime_type);
-                        
-                        if (typeof type !== 'string') {
-                            console.log('Not supported MIME type: ' + typeof type); // TODO: error handling
-                            return;
-                        }
-
-                        switch (type) {
-                            case 'image':
-                                this.media.push(new ImageClass(...relevantData));
-                                break;
-                        
-                            case 'video':
-                                this.media.push(new VideoClass(...relevantData));
-                                break;
-                        
-                            default:
-                                console.log('Unsupported medium type: ' + type); // TODO: error handling
-                                return;
-                                break;
-                        }
-                    })
-                    .catch((error) => {
-                        /* TODO: handle errors if failed */
-                        console.log(error); // TODO: error handling
-                    })
-                    .then(() => {
-                        /* always executed */
-                        this.loadingMedium = false;
-                    });
-            },
-            conditionalAddMediumToBuffer() {
-                if (
-                    !this.loadingMedium &&
-                    this.needMoreMedia &&
-                    !this.noMoreMediaAvailable
-                ) {
-                    this.addMediumToBuffer();
-                }
-            },
-            requestStepMedia() {
-                this.stepMediaRequested = true;
-            },
-            conditionalStepMedia() {
-                let minMediaCount = 1;
-
-                if (window.hasOwnProperty('assess') && assess === true) {
-                    minMediaCount = 0;
-                }
-
-                if (
-                    this.media.length > minMediaCount &&
-                    this.stepMediaRequested
-                ) {
-                    this.media.shift();
-                    this.stepMediaRequested = false;
-                }
-            }
         },
         components: {
             imagecomp: ImageComp,
