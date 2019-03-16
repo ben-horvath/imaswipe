@@ -49,12 +49,9 @@
             /* Init Hammer */
             let hammerElement = document.getElementById('medium-container');
             window.hammer = new Hammer(hammerElement);
-            PreventGhostClick(hammerElement);
 
             /* Register Hammer actions */
             window.hammer.on('tap', (event) => {
-                document.getElementById('permalink').style.display = 'none';
-
                 if (event.target != document.getElementById('permalink')) {
                     this.mediaBuffer.stepMedia();
                 }

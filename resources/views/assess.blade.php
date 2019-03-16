@@ -26,7 +26,6 @@
         <!-- Scripts -->
         <script src="{{ asset('js/clipboard.min.js') }}"></script>
         <script src="{{ asset('js/hammer.min.js') }}"></script>
-        <script src="{{ asset('js/prevent-ghost-click.js') }}"></script>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>
 </html>
