@@ -53,10 +53,16 @@
 
             /* Register Hammer actions */
             window.hammer.on('tap', (event) => {
-                this.mediaBuffer.stepMedia();
+                document.getElementById('permalink').style.display = 'none';
+
+                if (event.target != document.getElementById('permalink')) {
+                    this.mediaBuffer.stepMedia();
+                }
             });
 
             window.hammer.on('swipeleft', (event) => {
+                document.getElementById('permalink').style.display = 'none';
+
                 if (mode === 'assess') {
                     this.mediaBuffer.deleteMedium();
                 } else {
@@ -65,6 +71,8 @@
             });
 
             window.hammer.on('swiperight', (event) => {
+                document.getElementById('permalink').style.display = 'none';
+
                 if (mode === 'assess') {
                     this.mediaBuffer.approveMedium();
                 } else {
@@ -73,6 +81,8 @@
             });
 
             window.addEventListener('keydown', (event) => {
+                document.getElementById('permalink').style.display = 'none';
+
                 this.mediaBuffer.stepMedia();
             });
 
