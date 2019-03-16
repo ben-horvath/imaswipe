@@ -63,6 +63,8 @@
             window.hammer.on('swiperight', (event) => {
                 this.mediaBuffer.approveMedium();
             });
+
+            this.mediaBuffer.syncWithServer();
         },
         computed: {
             clipboardText() {
