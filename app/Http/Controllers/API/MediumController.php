@@ -63,20 +63,6 @@ class MediumController extends Controller
      */
     public function sync(Request $request)
     {
-        /* Delete */
-        if ($request->delete) {
-            foreach($request->delete as $medium_name) {
-                $medium = Medium::find($medium_name);
-
-                /* remove medium file from storage */
-                Storage::disk('public')
-                    ->delete($medium->name . '.' . $medium->extension);
-
-                /* remove medium entry from database */
-                $medium->delete();
-            }
-        }
-
         /* Approve */
         foreach($request->approve as $medium_name) {
             $medium = Medium::find($medium_name);

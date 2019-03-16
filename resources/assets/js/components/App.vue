@@ -57,11 +57,19 @@
             });
 
             window.hammer.on('swipeleft', (event) => {
-                this.mediaBuffer.deleteMedium();
+                if (mode === 'assess') {
+                    this.mediaBuffer.deleteMedium();
+                } else {
+                    this.mediaBuffer.stepMedia();
+                }
             });
 
             window.hammer.on('swiperight', (event) => {
-                this.mediaBuffer.approveMedium();
+                if (mode === 'assess') {
+                    this.mediaBuffer.approveMedium();
+                } else {
+                    this.mediaBuffer.stepMedia();
+                }
             });
 
             window.addEventListener('keydown', (event) => {
