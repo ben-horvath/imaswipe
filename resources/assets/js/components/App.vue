@@ -64,6 +64,10 @@
                 this.mediaBuffer.approveMedium();
             });
 
+            window.addEventListener('keydown', (event) => {
+                this.mediaBuffer.stepMedia();
+            });
+
             this.mediaBuffer.syncWithServer();
         },
         computed: {
