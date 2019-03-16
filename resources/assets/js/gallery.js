@@ -6,6 +6,7 @@ var config = {
             'image/png'
         ],
         videos: [
+            'video/mp4',
             'video/webm',
             'video/ogg'
         ]
