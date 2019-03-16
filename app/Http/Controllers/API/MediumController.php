@@ -57,15 +57,55 @@ class MediumController extends Controller
     }
 
     /**
+     * Synchronize resources. Perform multiple actions.
+     *
+     * @return \App\Http\Resources\Medium
+     */
+    public function sync(Request $request)
+    {
+        /* Delete */
+        if ($request->delete) {
+            foreach($request->delete as $medium_name) {
+                $medium = Medium::find($medium_name);
+
+                /* remove medium file from storage */
+                Storage::disk('public')
+                    ->delete($medium->name . '.' . $medium->extension);
+
+                /* remove medium entry from database */
+                $medium->delete();
+            }
+        }
+
+        /* Approve */
+        foreach($request->approve as $medium_name) {
+            $medium = Medium::find($medium_name);
+            $medium->approved = true;
+            $medium->save();
+        }
+        
+        $approved = ($request->mode === 'assess') ? null : true;
+
+        $medium_collection = Medium::where('approved', $approved)->inRandomOrder()->take(10)->get();
+
+        if ($request->startWith) {
+            $first_medium = Medium::find($request->startWith);
+            $medium_collection->prepend($first_medium);
+        }
+
+        return MediumResource::collection($medium_collection);
+    }
+
+    /**
      * Return a random resource.
      *
      * @return \App\Http\Resources\Medium
      */
     public function random()
     {
-        $medium = Medium::where('approved', true)->inRandomOrder()->first();
+        $medium_collection = Medium::where('approved', true)->inRandomOrder()->take(10)->get();
 
-        return new MediumResource($medium);
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -75,13 +115,9 @@ class MediumController extends Controller
      */
     public function assess()
     {
-        $medium = Medium::where('approved', null)->inRandomOrder()->first();
+        $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
 
-        if ($medium) {
-            return new MediumResource($medium);
-        } else {
-            return;
-        }
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -92,7 +128,10 @@ class MediumController extends Controller
      */
     public function show(Medium $medium)
     {
-        //
+        $medium_collection = Medium::where('approved', true)->inRandomOrder()->take(9)->get();
+        $medium_collection->prepend($medium);
+
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -109,7 +148,9 @@ class MediumController extends Controller
             $medium->save();
         }
 
-        return new MediumResource($medium);
+        $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
+
+        return MediumResource::collection($medium_collection);
     }
 
     /**
@@ -121,9 +162,6 @@ class MediumController extends Controller
      */
     public function destroy(Medium $medium)
     {
-        /* save the ID for returning */
-        $id = $medium->id;
-
         /* remove medium file from storage */
         Storage::disk('public')
             ->delete($medium->name . '.' . $medium->extension);
@@ -131,7 +169,9 @@ class MediumController extends Controller
         /* remove medium entry from database */
         $medium->delete();
 
-        return $id;
+        $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
+
+        return MediumResource::collection($medium_collection);
     }
 
     private function copy_remote_file($url) {
