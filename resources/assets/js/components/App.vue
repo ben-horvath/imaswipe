@@ -81,9 +81,11 @@
             });
 
             window.addEventListener('keydown', (event) => {
-                document.getElementById('permalink').style.display = 'none';
+                if (event.code == 'Space' || event.code == 'Enter') {
+                    document.getElementById('permalink').style.display = 'none';
 
-                this.mediaBuffer.stepMedia();
+                    this.mediaBuffer.stepMedia();
+                }
             });
 
             this.mediaBuffer.syncWithServer();
