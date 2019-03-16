@@ -36,8 +36,6 @@
             }
         },
         mounted() {
-            let app = this;
-
             /* Init ClipboardJS */
             new ClipboardJS('#permalink');
 
@@ -55,7 +53,7 @@
 
             /* Register Hammer actions */
             window.hammer.on('tap', (event) => {
-                app.mediaBuffer.stepMedia();
+                this.mediaBuffer.stepMedia();
             });
 
             window.hammer.on('swipeleft', (event) => {
