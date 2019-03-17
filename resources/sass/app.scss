@@ -1,0 +1,86 @@
+
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+.navbar-laravel {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+@mixin full-height {
+    height: 100%;
+}
+
+@mixin full-width {
+    width: 100%;
+}
+
+@mixin max-full-height {
+    max-height: 100%;
+}
+
+@mixin max-full-width {
+    max-width: 100%;
+}
+
+@mixin position-ref {
+    position: relative;
+}
+
+@mixin flex-center {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: $body-bg;
+}
+
+.welcome-body {
+    background-color: black;
+}
+
+#app {
+    @include full-width;
+    @include full-height;
+}
+
+#medium-container {
+    @include flex-center;
+    @include position-ref;
+    @include full-width;
+    @include full-height;
+}
+
+#medium {
+    @include max-full-height;
+    @include max-full-width;
+}
+
+.permalink {
+    display: none;
+    background-color: rgba(0,0,0,0.7);
+    border: none;
+    color: white;
+    padding: 22px 44px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 18px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    border-radius: 10px;
+    outline: 0;
+}

@@ -11,8 +11,15 @@
 |
 */
 
+Route::get('/', 'WelcomeController@show');
+
 Route::get('assess', 'AssessController@show');
 
-Route::get('{name}', 'WelcomeController@startWith')->name('welcome-start-with');
+Route::get('home', 'HomeController@index')->name('home');
 
-Route::get('/', 'WelcomeController@show');
+Auth::routes();
+
+Route::get('login/google', 'Auth\LoginController@redirectToProvider');
+Route::get('login/google/callback', 'Auth\LoginController@handleProviderCallback');
+
+Route::get('{name}', 'WelcomeController@startWith')->name('welcome-start-with');
