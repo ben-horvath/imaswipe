@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', 'WelcomeController@show');
+Route::get('/', 'WelcomeController@show')->name('welcome');
 
-Route::get('assess', 'AssessController@show');
+Route::get('assess', 'AssessController@show')->middleware('auth');
 
 Route::get('home', 'HomeController@index')->name('home');
 
