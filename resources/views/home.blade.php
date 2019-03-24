@@ -5,16 +5,28 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
-
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+                    <div class="row">
+                        <div class="col text-center">
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                onclick="document.getElementById('logout-form').submit();"
+                            >
+                                {{ __('Logout') }}
+                            </button>
 
-                    You are logged in!
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col text-center">
+                            {{ Auth::user()->email }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
