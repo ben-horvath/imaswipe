@@ -45,4 +45,11 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\AuthOption');
     }
+
+    /**
+     * Check if the user is admin
+     */
+    public function isAdmin() {
+        return $this->is_admin;
+    }
 }

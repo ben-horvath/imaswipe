@@ -63,14 +63,38 @@ class MediumController extends Controller
      */
     public function sync(Request $request)
     {
-        /* Approve */
-        foreach($request->approve as $medium_name) {
-            $medium = Medium::find($medium_name);
-            $medium->approved = true;
-            $medium->save();
+        /* Get the approved ones only by default */
+        $approved = true;
+
+        /* Do the admin-only actions */
+        if (
+            $request->user('api') &&
+            $request->user('api')->isAdmin()
+        ) {
+            /* Delete */
+            if ($request->delete) {
+                foreach($request->delete as $medium_name) {
+                    $medium = Medium::find($medium_name);
+
+                    /* remove medium file from storage */
+                    Storage::disk('public')
+                        ->delete($medium->name . '.' . $medium->extension);
+
+                    /* remove medium entry from database */
+                    $medium->delete();
+                }
+            }
+
+            /* Approve */
+            foreach($request->approve as $medium_name) {
+                $medium = Medium::find($medium_name);
+                $medium->approved = true;
+                $medium->save();
+            }        
+
+            /* If user is admin and the selected mode is the assessment, return media that is not yet approved */
+            $approved = ($request->mode === 'assess') ? null : true;
         }
-        
-        $approved = ($request->mode === 'assess') ? null : true;
 
         $medium_collection = Medium::where('approved', $approved)->inRandomOrder()->take(10)->get();
 
