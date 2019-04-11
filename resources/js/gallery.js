@@ -194,7 +194,6 @@ class MediaBuffer {
 }
 
 export {
-    supportedMIMETypes,
     Medium,
     ImageMedium,
     VideoMedium,

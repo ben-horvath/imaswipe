@@ -18,8 +18,9 @@ You can use `php artisan storage:link` command to create it as [Laravel Docs](ht
 Needed only if you want to use the Upload (FTP) option to add media described below.
 10. (Optional) Start scheduler as described in the [Laravel Docs](https://laravel.com/docs/scheduling#introduction).<br/>
 Needed only if you want to use the Upload (FTP) option to add media described below.
-11. Run `npm run prod` to generate js and css files.
-12. Add at least two media as described below.
+11. Run the queue worker as described in the [Laravel Docs](https://laravel.com/docs/5.8/queues#running-the-queue-worker).
+12. Run `npm run prod` to generate js and css files.
+13. Add at least two media as described below.
 
 ## Use
 

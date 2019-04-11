@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use InstagramScraper\Instagram;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\ScrapeInstagram;
 
 class MediumController extends Controller
 {
@@ -39,21 +40,7 @@ class MediumController extends Controller
         }
         $clean_url = strtok($request->input('url'), '?');
 
-        /* scrape Instagram post */
-        $instagram = new Instagram;
-        $media = $instagram->getMediaByUrl($clean_url);
-        $collection = $media->getSidecarMedias();
-        if (count($collection) > 1) {
-            foreach ($collection as $current_media) {
-                $media_url = $this->get_media_url($current_media);
-                $stored_media[] = $this->copy_remote_file($media_url);
-            }
-            return MediumResource::collection(collect($stored_media));
-        } else {
-            $media_url = $this->get_media_url($media);
-            $stored_medium = $this->copy_remote_file($media_url);
-            return new MediumResource($stored_medium);
-        }
+        ScrapeInstagram::dispatch($clean_url);
     }
 
     /**
@@ -63,14 +50,38 @@ class MediumController extends Controller
      */
     public function sync(Request $request)
     {
-        /* Approve */
-        foreach($request->approve as $medium_name) {
-            $medium = Medium::find($medium_name);
-            $medium->approved = true;
-            $medium->save();
+        /* Get the approved ones only by default */
+        $approved = true;
+
+        /* Do the admin-only actions */
+        if (
+            $request->user('api') &&
+            $request->user('api')->isAdmin()
+        ) {
+            /* Delete */
+            if ($request->delete) {
+                foreach($request->delete as $medium_name) {
+                    $medium = Medium::find($medium_name);
+
+                    /* remove medium file from storage */
+                    Storage::disk('public')
+                        ->delete($medium->name . '.' . $medium->extension);
+
+                    /* remove medium entry from database */
+                    $medium->delete();
+                }
+            }
+
+            /* Approve */
+            foreach($request->approve as $medium_name) {
+                $medium = Medium::find($medium_name);
+                $medium->approved = true;
+                $medium->save();
+            }        
+
+            /* If user is admin and the selected mode is the assessment, return media that is not yet approved */
+            $approved = ($request->mode === 'assess') ? null : true;
         }
-        
-        $approved = ($request->mode === 'assess') ? null : true;
 
         $medium_collection = Medium::where('approved', $approved)->inRandomOrder()->take(10)->get();
 
@@ -158,43 +169,5 @@ class MediumController extends Controller
         $medium_collection = Medium::where('approved', null)->inRandomOrder()->take(10)->get();
 
         return MediumResource::collection($medium_collection);
-    }
-
-    private function copy_remote_file($url) {
-        /* get remote file to a temporary local place */
-        $contents = file_get_contents($url);
-        $name = Str::random(40);
-        Storage::put($name, $contents, 'public');
-
-        /* get file meta data */
-        $path = Storage::path($name);
-        $file = new File($path);
-        $extension = $file->guessExtension();
-        $mime_type = $file->getMimeType();
-
-        /* rename the temporary file to also contain the correct extension */
-        Storage::move($name, $name . '.' . $extension);
-
-        /* save to database */
-        $medium = new Medium;
-        $medium->name = $name;
-        $medium->extension = $extension;
-        $medium->mime_type = $mime_type;
-        $medium->save();
-
-        /* return the newly created medium as a resource */
-        return $medium;
-    }
-
-    private function get_media_url($media) {
-        switch ($media->getType()) {
-            case 'image':
-                return $media->getImageHighResolutionUrl();
-                break;
-
-            case 'video':
-                return $media->getVideoStandardResolutionUrl();
-                break;
-        }
     }
 }

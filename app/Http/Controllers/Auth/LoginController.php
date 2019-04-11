@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Socialite;
+use App\User;
+use App\AuthOption;
 
 class LoginController extends Controller
 {
@@ -35,5 +38,36 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    /**
+     * Redirect the user to the Google authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToProvider()
+    {
+        return Socialite::driver('google')->with(['prompt' => 'select_account'])->redirect();
+    }
+
+    /**
+     * Obtain the user information from Google.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback()
+    {
+        $google_user = Socialite::driver('google')->stateless()->user();
+
+        $user = User::firstOrCreate(['email' => $google_user->getEmail()]);
+
+        $auth_option = AuthOption::firstOrCreate(
+            ['user_id_at_provider' => $google_user->getID()],
+            ['provider' => 'google', 'user_id' => $user->id]
+        );
+
+        \Auth::login($user);
+
+        return redirect()->route('welcome');
     }
 }

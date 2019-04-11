@@ -19,7 +19,7 @@
             var mode = 'browse';
         </script>
     </head>
-    <body>
+    <body class="welcome-body">
         <div id="app">
             <app></app>
         </div>
