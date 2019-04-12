@@ -13,7 +13,8 @@ var config = {
     },
     bufferSizeMax: 10,
     defaultMode: 'browse',
-    syncInterval: 1100
+    syncInterval: 1100,
+    stepInterval: 2000
 }
 
 class Medium {
@@ -190,6 +191,14 @@ class MediaBuffer {
             this.request.approve.push(this.media[0].name);
             this.media.shift();
         }
+    }
+
+    play() {
+        this.stepTimer = setInterval(this.stepMedia.bind(this), config.stepInterval);
+    }
+
+    pause() {
+        clearInterval(this.stepTimer);
     }
 }
 

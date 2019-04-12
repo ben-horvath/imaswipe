@@ -88,6 +88,10 @@
             });
 
             this.mediaBuffer.syncWithServer();
+
+            if (mode !== 'assess') {
+                this.mediaBuffer.play();
+            }
         },
         computed: {
             clipboardText() {
