@@ -2,6 +2,9 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
+// Font icons
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Outlined');
+
 // Variables
 @import 'variables';
 
@@ -90,4 +93,30 @@ body {
     cursor: pointer;
     border-radius: 10px;
     outline: 0;
+}
+
+.login-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.bottom-app-interface {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    z-index: 10;
+    bottom: 0;
+    justify-content: space-between;
+}
+
+.app-button {
+    display: block;
+    color: #ddd;
+    font-size: 40px;
+    margin: 20px;
+    cursor: pointer;
+    text-shadow: rgba(0, 0, 0, 0.7) 1px 1px 4px;
 }

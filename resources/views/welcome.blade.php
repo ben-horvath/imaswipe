@@ -25,6 +25,33 @@
             <app></app>
         </div>
 
+        @if(Auth::guest())
+            <a href="login/google">
+                <img class="login-button" src="interface/login-buttons/google-normal.png">
+            </a>
+        @else
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+    
+            <div class="bottom-app-interface">
+                <i
+                    class="material-icons-outlined app-button"
+                    onclick="alert('Coming soon');"
+                >info</i>
+
+                <i
+                    class="material-icons-outlined app-button"
+                    onclick="alert('Coming soon');"
+                >pause</i>
+
+                <i
+                    class="material-icons-outlined app-button"
+                    onclick="document.getElementById('logout-form').submit();"
+                >exit_to_app</i>
+            </div>
+        @endif
+
         <!-- Scripts -->
         <script src="{{ asset('js/clipboard.min.js') }}"></script>
         <script src="{{ asset('js/hammer.min.js') }}"></script>
