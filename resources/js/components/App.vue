@@ -1,5 +1,5 @@
 <template>
-    <div id="medium-container">
+    <div id="medium-container" :class="visibility" :style="{ backgroundImage: background }">
         <component v-if="src" :is="comp" :src="src"></component>
 
         <button
@@ -53,6 +53,8 @@
             /* Register Hammer actions */
             window.hammer.on('tap', (event) => {
                 if (event.target != document.getElementById('permalink')) {
+                    document.getElementById('permalink').style.display = 'none';
+
                     this.mediaBuffer.stepMedia();
                 }
             });
@@ -86,6 +88,10 @@
             });
 
             this.mediaBuffer.syncWithServer();
+
+            if (mode !== 'assess') {
+                this.mediaBuffer.play();
+            }
         },
         computed: {
             clipboardText() {
@@ -101,8 +107,28 @@
                 }
             },
             src() {
-                if (this.mediaBuffer.medium instanceof MediumClass) {
+                if (
+                    viewer !== 'guest' &&
+                    this.mediaBuffer.medium instanceof MediumClass
+                ) {
                     return this.mediaBuffer.medium.src;
+                } else {
+                    return '';
+                }
+            },
+            visibility() {
+                if (viewer === 'guest') {
+                    return 'blocked';
+                } else {
+                    return '';
+                }
+            },
+            background() {
+                if (
+                    viewer === 'guest' &&
+                    this.mediaBuffer.medium instanceof MediumClass
+                ) {
+                    return 'url(\'' + this.mediaBuffer.medium.src + '\')';
                 } else {
                     return '';
                 }
