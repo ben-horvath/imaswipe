@@ -62,6 +62,13 @@ body {
     @include full-height;
 }
 
+#medium-container.blocked {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(8px) opacity(30%);
+}
+
 #medium {
     @include max-full-height;
     @include max-full-width;

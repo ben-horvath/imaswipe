@@ -1,5 +1,5 @@
 <template>
-    <div id="medium-container">
+    <div id="medium-container" :class="visibility" :style="{ backgroundImage: background }">
         <component v-if="src" :is="comp" :src="src"></component>
 
         <button
@@ -107,8 +107,28 @@
                 }
             },
             src() {
-                if (this.mediaBuffer.medium instanceof MediumClass) {
+                if (
+                    viewer !== 'guest' &&
+                    this.mediaBuffer.medium instanceof MediumClass
+                ) {
                     return this.mediaBuffer.medium.src;
+                } else {
+                    return '';
+                }
+            },
+            visibility() {
+                if (viewer === 'guest') {
+                    return 'blocked';
+                } else {
+                    return '';
+                }
+            },
+            background() {
+                if (
+                    viewer === 'guest' &&
+                    this.mediaBuffer.medium instanceof MediumClass
+                ) {
+                    return 'url(\'' + this.mediaBuffer.medium.src + '\')';
                 } else {
                     return '';
                 }

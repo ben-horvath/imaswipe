@@ -17,6 +17,7 @@
             var mediumPermalinkBase = '{{ route('welcome-start-with', ['name' => '']) . '/' }}';
             var firstMedium = '{{ !empty($first_medium) ? $first_medium : '' }}';
             var mode = 'browse';
+            var viewer = '{{ Auth::guest() ? 'guest' : '' }}';
         </script>
     </head>
     <body class="welcome-body">
