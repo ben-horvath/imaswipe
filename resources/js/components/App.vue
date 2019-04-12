@@ -53,6 +53,8 @@
             /* Register Hammer actions */
             window.hammer.on('tap', (event) => {
                 if (event.target != document.getElementById('permalink')) {
+                    document.getElementById('permalink').style.display = 'none';
+
                     this.mediaBuffer.stepMedia();
                 }
             });
