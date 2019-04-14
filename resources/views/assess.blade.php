@@ -16,6 +16,7 @@
         <script>
             var mediumPermalinkBase = '{{ route('welcome-start-with', ['name' => '']) . '/' }}';
             var mode = 'assess';
+            var viewer = '{{ Auth::guest() ? 'guest' : '' }}';
         </script>
     </head>
     <body>
