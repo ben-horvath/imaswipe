@@ -7,6 +7,21 @@
 
 require('./bootstrap');
 
+// Import support functions
+import {
+    upgrade as upgradeAccount
+} from './upgrade.js';
+
+var pauseModalPrimary;
+if (pauseModalPrimary = document.querySelector('#pauseModal .btn-primary')) {
+    pauseModalPrimary.onclick = function() { upgradeAccount(9); $('#upgradeThanksModal').modal('show'); };
+}
+
+var pauseModalSecondary;
+if (pauseModalSecondary = document.querySelector('#pauseModal .btn-outline-secondary')) {
+    pauseModalSecondary.onclick = function() { upgradeAccount(0); };
+}
+
 window.Vue = require('vue');
 
 /**

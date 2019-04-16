@@ -17,6 +17,8 @@ Route::get('assess', 'AssessController@show')->middleware('auth');
 
 Route::get('home', 'HomeController@index')->name('home');
 
+Route::post('upgrade', 'UserController@upgrade')->name('upgrade');
+
 Auth::routes();
 
 Route::get('login/google', 'Auth\LoginController@redirectToProvider');

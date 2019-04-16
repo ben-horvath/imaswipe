@@ -1,0 +1,17 @@
+<?php
+
+return [
+
+    'info-modal-body' => 'The gallery you\'ll never stop watching',
+    'info-modal-button' => 'Close',
+
+    'pause-modal-title' => 'Pause Slideshow',
+    'pause-modal-body' => 'Upgrade for <sup>$</sup><strong>9</strong> /month to access this feature.',
+    'pause-modal-primary-button' => 'Worth it',
+    'pause-modal-secondary-button' => 'Back to autoplay',
+
+    'upgrade-thanks-modal-title' => 'Upgrade',
+    'upgrade-thanks-modal-body' => 'Thanks for your interest. We are currently implementing this feature. We\'ll let you know when it becomes available.',
+    'upgrade-thanks-modal-button' => 'Close',
+
+];

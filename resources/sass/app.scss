@@ -11,11 +11,6 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-.navbar-laravel {
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-}
-
 @mixin full-height {
     height: 100%;
 }
@@ -47,6 +42,11 @@ body {
     height: 100%;
     margin: 0;
     background-color: $body-bg;
+    color: #ddd;
+}
+
+strong {
+    font-size: larger;
 }
 
 .welcome-body {
@@ -120,3 +120,39 @@ body {
     cursor: pointer;
     text-shadow: rgba(0, 0, 0, 0.7) 1px 1px 4px;
 }
+
+.modal-content {
+    border: 0;
+    background-color: black;
+}
+
+.modal-header {
+    border-bottom: 0;
+}
+
+.modal-body {
+    text-align: center;
+}
+
+.modal-footer {
+    border-top: 0;
+}
+
+.close {
+    color: #ddd;
+    opacity: 0.7;
+}
+
+.close:hover {
+    color: #ddd;
+}
+
+.btn-outline-secondary {
+    color: #aaa;
+    border-color: #aaa;
+}
+
+.btn-primary {
+    color: #ddd;
+}
+
