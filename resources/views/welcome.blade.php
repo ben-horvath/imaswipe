@@ -37,12 +37,14 @@
             <div class="bottom-app-interface">
                 <i
                     class="material-icons-outlined app-button"
-                    onclick="alert('Coming soon');"
+                    data-toggle="modal"
+                    data-target="#infoModal"
                 >info</i>
 
                 <i
                     class="material-icons-outlined app-button"
-                    onclick="alert('Coming soon');"
+                    data-toggle="modal"
+                    data-target="#pauseModal"
                 >pause</i>
 
                 <i
@@ -50,6 +52,68 @@
                     onclick="document.getElementById('logout-form').submit();"
                 >exit_to_app</i>
             </div>
+
+            @component('components.modal')
+                @slot('id')
+                    infoModal
+                @endslot
+
+                @slot('title')
+                    {{ env('APP_NAME') }}
+                @endslot
+
+                @slot('body')
+                    @lang('welcome.info-modal-body')
+                @endslot
+
+                @slot('primaryButton')
+                    @lang('welcome.info-modal-button')
+                @endslot
+            @endcomponent
+
+            @component('components.modal')
+                @slot('id')
+                    pauseModal
+                @endslot
+
+                @slot('title')
+                    @lang('welcome.pause-modal-title')
+                @endslot
+
+                @slot('body')
+                    @lang('welcome.pause-modal-body')
+                @endslot
+
+                @slot('primaryButton')
+                    @lang('welcome.pause-modal-primary-button')
+                @endslot
+
+                @slot('primaryButtonAction')
+                    upgrade
+                @endslot
+
+                @slot('secondaryButton')
+                    @lang('welcome.pause-modal-secondary-button')
+                @endslot
+            @endcomponent
+
+            @component('components.modal')
+                @slot('id')
+                    upgradeThanksModal
+                @endslot
+
+                @slot('title')
+                    @lang('welcome.upgrade-thanks-modal-title')
+                @endslot
+
+                @slot('body')
+                    @lang('welcome.upgrade-thanks-modal-body')
+                @endslot
+
+                @slot('primaryButton')
+                    @lang('welcome.upgrade-thanks-modal-button')
+                @endslot
+            @endcomponent
         @endif
 
         <!-- Scripts -->
