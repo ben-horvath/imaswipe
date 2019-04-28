@@ -49,4 +49,4 @@ See the [MIME types MDN page](https://developer.mozilla.org/en-US/docs/Web/HTTP/
 
 In order to display the added media, they need to be approved by an admin.<br/>
 Register a user (on the welcome page) you want to be admin. Connect to the server via ssh. Use [tinker](https://laravel.com/docs/artisan#tinker) to set the user as admin by setting the user's `is_admin` property to `1`.<br/>
-To approve media, log in to an admin account and swipe right to approve, swipe left to delete.
+To approve media, log in to an admin account, go to `https://<yourdomain>/assess` and swipe right to approve, swipe left to delete each medium.
