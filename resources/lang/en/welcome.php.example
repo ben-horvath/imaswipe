@@ -14,4 +14,6 @@ return [
     'upgrade-thanks-modal-body' => 'Thanks for your interest. We are currently implementing this feature. We\'ll let you know when it becomes available.',
     'upgrade-thanks-modal-button' => 'Close',
 
+    'sign-in-note' => '',
+
 ];

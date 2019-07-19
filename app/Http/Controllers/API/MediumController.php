@@ -94,6 +94,32 @@ class MediumController extends Controller
     }
 
     /**
+     * Merge resources.
+     */
+    public function merge(Request $request)
+    {
+        /* Do the admin-only actions */
+        if (
+            $request->user('api') &&
+            $request->user('api')->isAdmin()
+        ) {
+            /* Delete */
+            if (count($request->duplicates)) {
+                foreach($request->duplicates as $duplicate) {
+                    $medium = Medium::find($duplicate);
+
+                    /* remove medium file from storage */
+                    Storage::disk('public')
+                        ->delete($medium->name . '.' . $medium->extension);
+
+                    /* remove medium entry from database */
+                    $medium->delete();
+                }
+            }
+        }
+    }
+
+    /**
      * Return a random resource.
      *
      * @return \App\Http\Resources\Medium

@@ -23,4 +23,6 @@ Route::get('media/assess', 'API\MediumController@assess');
 
 Route::post('media/sync', 'API\MediumController@sync');
 
+Route::post('media/merge', 'API\MediumController@merge');
+
 Route::apiResource('media', 'API\MediumController');

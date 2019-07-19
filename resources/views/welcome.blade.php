@@ -26,9 +26,14 @@
         </div>
 
         @if(Auth::guest())
-            <a href="login/google">
-                <img class="login-button" src="interface/login-buttons/google-normal.png">
-            </a>
+            <div class="login-section">
+                <a href="login/google">
+                    <img src="interface/login-buttons/google-normal.png">
+                </a>
+                @if(!empty(__('welcome.sign-in-note')))
+                    <p>@lang('welcome.sign-in-note')</p>
+                @endif
+            </div>
         @else
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
