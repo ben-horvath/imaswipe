@@ -72,9 +72,13 @@ strong {
     filter: blur(8px) opacity(30%);
 }
 
-#medium {
+#medium-container #medium {
     @include max-full-height;
     @include max-full-width;
+}
+
+button {
+    max-width: max-content;
 }
 
 .permalink {
@@ -163,3 +167,28 @@ strong {
     color: #ddd;
 }
 
+#merge {
+    #medium {
+        max-width: 100%;
+        max-height: 28vh;
+    }
+
+    .row {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    .duplicates {
+        background-color: black;
+        padding-top: 0;
+        padding-bottom: 0;
+
+        div[class*='col-'] {
+            padding: 15px;
+        }
+    }
+
+    p {
+        color: black;
+    }
+}

@@ -15,6 +15,8 @@ Route::get('/', 'WelcomeController@show')->name('welcome');
 
 Route::get('assess', 'AssessController@show')->middleware('auth');
 
+Route::get('merge', 'MergeController@show')->middleware('auth');
+
 Route::get('home', 'HomeController@index')->name('home');
 
 Route::post('upgrade', 'UserController@upgrade')->name('upgrade');
