@@ -30,7 +30,10 @@
                 <a href="login/google">
                     <img src="interface/login-buttons/google-normal.png">
                 </a>
-                @if(!empty(__('welcome.sign-in-note')))
+                @if(
+                    !empty(__('welcome.sign-in-note')) &&
+                    __('welcome.sign-in-note') != 'welcome.sign-in-note'
+                )
                     <p>@lang('welcome.sign-in-note')</p>
                 @endif
             </div>

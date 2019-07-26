@@ -66,7 +66,7 @@ class LoginController extends Controller
             ['provider' => 'google', 'user_id' => $user->id]
         );
 
-        \Auth::login($user);
+        \Auth::login($user, true);
 
         return redirect()->route('welcome');
     }
