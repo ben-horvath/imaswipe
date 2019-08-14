@@ -9,7 +9,10 @@ function upgrade(amount) {
         action = 'noUpgrade';
     }
 
-    ga('send', 'event', 'Upgrade', action, '', amount);
+    gtag('event', action, {
+        'event_category': 'Upgrade',
+        'value': amount
+    });
 }
 
 export {
