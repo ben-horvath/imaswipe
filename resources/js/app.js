@@ -22,6 +22,11 @@ if (pauseModalSecondary = document.querySelector('#pauseModal .btn-outline-secon
     pauseModalSecondary.onclick = function() { upgradeAccount(0); };
 }
 
+var pauseModalClose;
+if (pauseModalClose = document.querySelector('#pauseModal .close')) {
+    pauseModalClose.onclick = function() { upgradeAccount(0); };
+}
+
 window.Vue = require('vue');
 
 /**

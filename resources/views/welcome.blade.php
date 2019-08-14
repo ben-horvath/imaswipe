@@ -84,6 +84,9 @@
 
                 @slot('body')
                     @lang('welcome.info-modal-body')
+                    @if(env('EMAIL_ADDRESS'))
+                        <br><br>{{ env('EMAIL_ADDRESS') }}
+                    @endif
                 @endslot
 
                 @slot('primaryButton')
