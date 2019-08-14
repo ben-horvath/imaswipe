@@ -19,6 +19,18 @@
             var mode = 'browse';
             var viewer = '{{ Auth::guest() ? 'guest' : '' }}';
         </script>
+
+        @if(env('GOOGLE_TRACKING_ID'))
+            <!-- Google Analytics -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{ env('GOOGLE_TRACKING_ID') }}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', '{{ env("GOOGLE_TRACKING_ID") }}');
+            </script>
+        @endif
     </head>
     <body class="welcome-body">
         <div id="app">
