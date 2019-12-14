@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 
 class WelcomeControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @test
      */
