@@ -16,6 +16,8 @@ class WelcomeControllerTest extends TestCase
      */
     public function permalink_passes_the_medium_id_to_view()
     {
+        $this->withoutExceptionHandling();
+
         $medium_id = Str::random(40);
 
         $response = $this->get(route('welcome-start-with', [$medium_id]));
