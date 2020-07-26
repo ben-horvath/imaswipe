@@ -87,6 +87,7 @@ class MediaBuffer {
         this.status = 'empty';
         this.request = new Request(mode, startWith);
         this.syncTimer = setInterval(this.syncWithServer.bind(this), config.syncInterval);
+        this.paused = false;
     }
 
     syncWithServer() {
@@ -195,10 +196,20 @@ class MediaBuffer {
 
     play() {
         this.stepTimer = setInterval(this.stepMedia.bind(this), config.stepInterval);
+        this.paused = false;
     }
 
     pause() {
         clearInterval(this.stepTimer);
+        this.paused = true;
+    }
+
+    togglePause() {
+        if (this.paused) {
+            this.play();
+        } else {
+            this.pause();
+        }
     }
 }
 

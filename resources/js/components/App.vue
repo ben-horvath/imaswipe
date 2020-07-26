@@ -52,10 +52,13 @@
 
             /* Register Hammer actions */
             window.hammer.on('tap', (event) => {
-                if (event.target != document.getElementById('permalink')) {
+                if (
+                    event.target != document.getElementById('permalink') &&
+                    event.target != document.querySelector('[data-target="#pauseModal"]')
+                ) {
                     document.getElementById('permalink').style.display = 'none';
 
-                    this.mediaBuffer.stepMedia();
+                    this.mediaBuffer.togglePause();
                 }
             });
 
@@ -83,7 +86,7 @@
                 if (event.code == 'Space' || event.code == 'Enter') {
                     document.getElementById('permalink').style.display = 'none';
 
-                    this.mediaBuffer.stepMedia();
+                    this.mediaBuffer.togglePause();
                 }
             });
 
